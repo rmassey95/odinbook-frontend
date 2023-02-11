@@ -5,7 +5,7 @@ import likedImg from "../liked.png";
 const { React, useState, useEffect } = require("react");
 const { useSelector } = require("react-redux");
 
-const Timeline = () => {
+const Timeline = ({ fetchPath }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const user = useSelector((state) => {
@@ -17,17 +17,14 @@ const Timeline = () => {
   });
 
   const getPosts = async () => {
-    console.log(user);
     if (Object.keys(user).length > 0 && !user.guest) {
       const postsRes = await fetch(
-        `http://localhost:5000/odinbook/profile/${user._id}/timeline`,
+        `${fetchPath}/odinbook/profile/${user._id}/timeline`,
         {
           method: "GET",
           credentials: "include",
           headers: {
-            Accept: "application/json",
             "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
           },
         }
       );
@@ -42,9 +39,9 @@ const Timeline = () => {
     } else if (authenticated === false) {
       navigate("/odinbook");
     } else if (user.guest) {
-      const postsRes = await fetch(
-        `http://localhost:5000/odinbook/profile/all-posts`
-      );
+      const postsRes = await fetch(`${fetchPath}/odinbook/profile/all-posts`, {
+        method: "GET",
+      });
 
       let postsQuery = await postsRes.json();
       postsQuery.sort(function (a, b) {
@@ -59,18 +56,13 @@ const Timeline = () => {
   const addLike = async (event, postId) => {
     event.preventDefault();
 
-    await fetch(
-      `http://localhost:5000/odinbook/post/${user._id}/add-like/${postId}`,
-      {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
-        },
-      }
-    );
+    await fetch(`${fetchPath}/odinbook/post/${user._id}/add-like/${postId}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     getPosts();
   };
@@ -87,7 +79,8 @@ const Timeline = () => {
             <div className={indx > 0 ? "card mt-3" : "card"} key={post._id}>
               {post.img && (
                 <img
-                  src={`http://localhost:5000/images/${post.img}`}
+                  crossOrigin="anonymous"
+                  src={`${fetchPath}/images/${post.img}`}
                   className="card-img-top"
                   alt="post"
                 ></img>

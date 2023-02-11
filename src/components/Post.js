@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const { React, useState, useEffect } = require("react");
 const { useSelector } = require("react-redux");
 
-const Post = () => {
+const Post = ({ fetchPath }) => {
   const { postId } = useParams();
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState({});
@@ -22,13 +22,15 @@ const Post = () => {
   const getComments = async () => {
     if (authenticated) {
       const commentsRes = await fetch(
-        `http://localhost:5000/odinbook/comments/all/${postId}`
+        `${fetchPath}/odinbook/comments/all/${postId}`,
+        { method: "GET" }
       );
 
       if (post === null) {
-        const postRes = await fetch(
-          `http://localhost:5000/odinbook/post/${postId}`
-        );
+        const postRes = await fetch(`${fetchPath}/odinbook/post/${postId}`, {
+          method: "GET",
+          credentials: "include",
+        });
         const post = await postRes.json();
         setPost(post);
       }
@@ -46,14 +48,12 @@ const Post = () => {
     event.preventDefault();
 
     await fetch(
-      `http://localhost:5000/odinbook/comment/${user._id}/add-like/${commentId}`,
+      `${fetchPath}/odinbook/comment/${user._id}/add-like/${commentId}`,
       {
         method: "PUT",
         credentials: "include",
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
         },
       }
     );
@@ -64,13 +64,11 @@ const Post = () => {
   const deleteComment = async (event, commentId) => {
     event.preventDefault();
 
-    await fetch(`http://localhost:5000/odinbook/comment/delete/${commentId}`, {
+    await fetch(`${fetchPath}/odinbook/comment/delete/${commentId}`, {
       method: "DELETE",
       credentials: "include",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": true,
       },
     });
 
@@ -89,7 +87,8 @@ const Post = () => {
         <div className="card mt-3">
           {post.img && (
             <img
-              src={`http://localhost:5000/images/${post.img}`}
+              crossOrigin="anonymous"
+              src={`${fetchPath}/images/${post.img}`}
               className="card-img-top"
               alt="post"
             ></img>

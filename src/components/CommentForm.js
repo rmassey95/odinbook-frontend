@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 const { React, useState, useEffect } = require("react");
 const { useSelector } = require("react-redux");
 
-const CommentForm = () => {
+const CommentForm = ({ fetchPath }) => {
   const [commentText, setCommentText] = useState();
   const [loading, setLoading] = useState(true);
   const user = useSelector((state) => {
@@ -23,29 +23,22 @@ const CommentForm = () => {
     event.preventDefault();
 
     if (commentId) {
-      await fetch(
-        `http://localhost:5000/odinbook/comment/update/${commentId}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
-          },
-          body: JSON.stringify({ commentText }),
-        }
-      );
+      await fetch(`${fetchPath}/odinbook/comment/update/${commentId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ commentText }),
+      });
     } else {
       await fetch(
-        `http://localhost:5000/odinbook/comment/${user._id}/create/${postId}`,
+        `${fetchPath}/odinbook/comment/${user._id}/create/${postId}`,
         {
           method: "POST",
           credentials: "include",
           headers: {
-            Accept: "application/json",
             "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
           },
           body: JSON.stringify({ commentText }),
         }
@@ -60,14 +53,12 @@ const CommentForm = () => {
       if (Object.keys(user).length > 0 && commentId) {
         setLoading(true);
         const commentRes = await fetch(
-          `http://localhost:5000/odinbook/comment/${commentId}`,
+          `${fetchPath}/odinbook/comment/${commentId}`,
           {
             method: "GET",
             credentials: "include",
             headers: {
-              Accept: "application/json",
               "Content-Type": "application/json",
-              "Access-Control-Allow-Credentials": true,
             },
           }
         );

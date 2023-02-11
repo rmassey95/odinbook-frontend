@@ -6,7 +6,7 @@ import { addUser, authenticate } from "../app/authSlice";
 const { useSelector, useDispatch } = require("react-redux");
 const { React, useState, useEffect } = require("react");
 
-const Homepage = ({ test }) => {
+const Homepage = ({ fetchPath }) => {
   const [posts, setPosts] = useState({});
   const [friends, setFriends] = useState({});
   const [loading, setLoading] = useState(true);
@@ -29,26 +29,23 @@ const Homepage = ({ test }) => {
 
     if (authenticated && !user.guest) {
       const friendsRes = await fetch(
-        `http://localhost:5000/odinbook/user/friends/${user._id}`,
+        `${fetchPath}/odinbook/user/friends/${user._id}`,
         {
           method: "GET",
           credentials: "include",
+
           headers: {
-            Accept: "application/json",
             "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
           },
         }
       );
       const userPostsRes = await fetch(
-        `http://localhost:5000/odinbook/profile/${user._id}`,
+        `${fetchPath}/odinbook/profile/${user._id}`,
         {
           method: "GET",
           credentials: "include",
           headers: {
-            Accept: "application/json",
             "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
           },
         }
       );
@@ -60,9 +57,12 @@ const Homepage = ({ test }) => {
       setFriends(friends);
       setLoading(false);
     } else if (user.guest) {
-      const friendsRes = await fetch(`http://localhost:5000/odinbook/users`);
+      const friendsRes = await fetch(`${fetchPath}/odinbook/users`, {
+        method: "GET",
+      });
       const userPostsRes = await fetch(
-        `http://localhost:5000/odinbook/profile/all-posts`
+        `${fetchPath}/odinbook/profile/all-posts`,
+        { method: "GET" }
       );
 
       const friends = await friendsRes.json();
@@ -79,23 +79,19 @@ const Homepage = ({ test }) => {
   const removePost = async (event, postId) => {
     event.preventDefault();
 
-    await fetch(`http://localhost:5000/odinbook/post/delete/${postId}`, {
+    await fetch(`${fetchPath}/odinbook/post/delete/${postId}`, {
       method: "DELETE",
       credentials: "include",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": true,
       },
     });
 
-    await fetch(`http://localhost:5000/odinbook/comments/${postId}`, {
+    await fetch(`${fetchPath}/odinbook/comments/${postId}`, {
       method: "DELETE",
       credentials: "include",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": true,
       },
     });
 
@@ -197,7 +193,8 @@ const Homepage = ({ test }) => {
               <div className={indx > 0 ? "card mt-3" : "card"} key={post._id}>
                 {post.img && (
                   <img
-                    src={`http://localhost:5000/images/${post.img}`}
+                    crossOrigin="anonymous"
+                    src={`${fetchPath}/images/${post.img}`}
                     className="card-img-top"
                     alt="post"
                   ></img>
@@ -246,7 +243,7 @@ const Homepage = ({ test }) => {
           {!user.guest && (
             <a
               type="button"
-              className=" mb-3 btn btn-outline-primary"
+              className=" mb-3 mt-3 btn btn-outline-primary"
               style={{ width: "100%" }}
               href="/odinbook/create-post"
             >

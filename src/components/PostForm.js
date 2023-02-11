@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 const { useSelector } = require("react-redux");
 
-const PostForm = () => {
+const PostForm = ({ fetchPath }) => {
   const [content, setContent] = useState();
   const [image, setImage] = useState();
   const [loading, setLoading] = useState(true);
@@ -26,13 +26,11 @@ const PostForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (postId) {
-      await fetch(`http://localhost:5000/odinbook/post/update/${postId}`, {
+      await fetch(`${fetchPath}/odinbook/post/update/${postId}`, {
         method: "PUT",
         credentials: "include",
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
         },
         body: JSON.stringify({ content }),
       });
@@ -41,7 +39,7 @@ const PostForm = () => {
       formData.append("image", image);
       formData.append("content", content);
 
-      await fetch(`http://localhost:5000/odinbook/post/${user._id}/create`, {
+      await fetch(`${fetchPath}/odinbook/post/${user._id}/create`, {
         method: "POST",
         credentials: "include",
         body: formData,
@@ -54,18 +52,13 @@ const PostForm = () => {
 
   const getPost = async () => {
     if (authenticated && postId) {
-      const postRes = await fetch(
-        `http://localhost:5000/odinbook/post/${postId}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
-          },
-        }
-      );
+      const postRes = await fetch(`${fetchPath}/odinbook/post/${postId}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       const post = await postRes.json();
 

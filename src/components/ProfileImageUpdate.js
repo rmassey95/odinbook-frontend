@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 const { React, useState } = require("react");
 const { useSelector } = require("react-redux");
 
-const ProfileImageUpdate = () => {
+const ProfileImageUpdate = ({ fetchPath }) => {
   const [profileImg, setProfileImg] = useState();
   const user = useSelector((state) => {
     return state.auth.user;
@@ -16,13 +16,11 @@ const ProfileImageUpdate = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    await fetch(`http://localhost:5000/odinbook/user/update-img/${user._id}`, {
+    await fetch(`${fetchPath}/odinbook/user/update-img/${user._id}`, {
       method: "PUT",
       credentials: "include",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": true,
       },
       body: JSON.stringify({ profileImg }),
     });

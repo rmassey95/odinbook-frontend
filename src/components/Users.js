@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 const { React, useState, useEffect } = require("react");
 const { useSelector, useDispatch } = require("react-redux");
 
-const Users = () => {
+const Users = ({ fetchPath }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const user = useSelector((state) => {
@@ -17,14 +17,8 @@ const Users = () => {
 
   const getUsers = async () => {
     if (authenticated) {
-      const usersRes = await fetch("http://localhost:5000/odinbook/users", {
+      const usersRes = await fetch(`${fetchPath}/odinbook/users`, {
         method: "GET",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
-        },
       });
 
       const users = await usersRes.json();
@@ -37,18 +31,13 @@ const Users = () => {
   };
 
   const updateUserInfo = async () => {
-    const userInfoRes = await fetch(
-      "http://localhost:5000/odinbook/login/success",
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
-        },
-      }
-    );
+    const userInfoRes = await fetch(`${fetchPath}/odinbook/login/success`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     const userInfo = await userInfoRes.json();
     dispatch(addUser(userInfo.user));
@@ -59,14 +48,12 @@ const Users = () => {
     setLoading(true);
 
     const res = await fetch(
-      `http://localhost:5000/odinbook/user/${user._id}/send/${friendId}`,
+      `${fetchPath}/odinbook/user/${user._id}/send/${friendId}`,
       {
         method: "PUT",
         credentials: "include",
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
         },
       }
     );
@@ -83,14 +70,12 @@ const Users = () => {
     setLoading(true);
 
     const res = await fetch(
-      `http://localhost:5000/odinbook/user/${user._id}/accept/${friendId}`,
+      `${fetchPath}/odinbook/user/${user._id}/accept/${friendId}`,
       {
         method: "PUT",
         credentials: "include",
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
         },
       }
     );

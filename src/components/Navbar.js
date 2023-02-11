@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const { React, useState, useEffect } = require("react");
 const { useSelector, useDispatch } = require("react-redux");
 
-const Navbar = () => {
+const Navbar = ({ fetchPath }) => {
   const [loading, setLoading] = useState(true);
   const authenticated = useSelector((state) => {
     return state.auth.authenticated;
@@ -25,18 +25,13 @@ const Navbar = () => {
     const guest = localStorage.getItem("guest");
 
     if (!guest) {
-      const loginRes = await fetch(
-        "http://localhost:5000/odinbook/login/success",
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
-          },
-        }
-      );
+      const loginRes = await fetch(`${fetchPath}/odinbook/login/success`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (loginRes.status === 200) {
         const loginStatus = await loginRes.json();
@@ -68,7 +63,7 @@ const Navbar = () => {
   }, [authenticate]);
 
   const handleSignInClick = () => {
-    window.open("http://localhost:5000/odinbook/facebook", "_self");
+    window.open(`${fetchPath}/odinbook/facebook`, "_self");
   };
 
   const handleLogoutClick = () => {
@@ -78,7 +73,7 @@ const Navbar = () => {
       dispatch(deAuthenticate());
       navigate("/odinbook");
     } else {
-      window.open("http://localhost:5000/odinbook/logout", "_self");
+      window.open(`${fetchPath}/odinbook/logout`, "_self");
       dispatch(deAuthenticate());
       navigate("/odinbook");
     }
